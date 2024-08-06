@@ -1,0 +1,31 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+require("dotenv").config();
+
+// routes imports
+const authRoute = require("./routes/auth-route");
+
+const app = express();
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
+
+// routes
+app.use("/auth", authRoute);
+console.log(
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`
+);
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`
+  )
+  .then(() => {
+    app.listen(process.env.PORT || 5000);
+    console.log("Server started successfully👍 ", process.env.PORT || 5000);
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
