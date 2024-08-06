@@ -14,6 +14,13 @@ app.use(express.json());
 app.use(cors());
 
 // routes
+app.use("/api/health", (req, res) => {
+  try {
+    res.status(200).json({ ok: true, health: "100%" });
+  } catch (err) {
+    res.status(200).json({ ok: false, msg: "Server Down!" });
+  }
+});
 app.use("/auth", authRoute);
 console.log(
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`
