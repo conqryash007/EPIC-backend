@@ -31,12 +31,16 @@ const User = require("./../models/User");
 module.exports.signUp = async (req, res) => {
   try {
     const user = req.user;
-    const { role, designation, approved, dob, city, pin_code } = req.body;
+    let { role, designation, approved, dob, city, pin_code, email, name } =
+      req.body;
 
     const userId = user.uid;
-    const email = user.email;
+    if (!name) {
+      name = user.name || "";
+    }
 
     const userToSave = new User({
+      name,
       userId,
       email,
       role,

@@ -6,6 +6,8 @@ require("dotenv").config();
 
 // routes imports
 const authRoute = require("./routes/auth-route");
+const userRoute = require("./routes/user-route");
+const childRoute = require("./routes/child-route");
 
 const app = express();
 
@@ -21,10 +23,10 @@ app.use("/api/health", (req, res) => {
     res.status(200).json({ ok: false, msg: "Server Down!" });
   }
 });
-app.use("/auth", authRoute);
-console.log(
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`
-);
+app.use("/api/auth", authRoute);
+app.use("/api/user", userRoute);
+app.use("/api/child", childRoute);
+
 mongoose
   .connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`
