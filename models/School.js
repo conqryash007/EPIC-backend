@@ -7,9 +7,7 @@ const SchoolManagementSchema = new Schema(
       type: String,
     },
     user_id: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: String,
     },
     city: {
       type: String,

@@ -8,6 +8,7 @@ require("dotenv").config();
 const authRoute = require("./routes/auth-route");
 const userRoute = require("./routes/user-route");
 const childRoute = require("./routes/child-route");
+const quizRoute = require("./routes/quiz-route");
 
 const app = express();
 
@@ -26,6 +27,27 @@ app.use("/api/health", (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/child", childRoute);
+app.use("/api/quiz", quizRoute);
+app.post("/api/add", async (req, res) => {
+  const { collection, data } = req.body;
+
+  try {
+    // Dynamically import the model module
+    const modelModule = await import(`./models/${collection}`);
+    const CollectionModel = modelModule.default;
+
+    if (!CollectionModel) {
+      return res.status(400).send(`Collection ${collection} not found`);
+    }
+
+    const doc = new CollectionModel(data);
+    await doc.save();
+    res.send(`Data added to ${collection} collection`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error adding data to collection");
+  }
+});
 
 mongoose
   .connect(

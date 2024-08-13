@@ -1,3 +1,6 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
 const TeacherRatingSchoolSchema = new Schema(
   {
     school_id: {
@@ -6,9 +9,7 @@ const TeacherRatingSchoolSchema = new Schema(
       required: true,
     },
     user_id: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: String,
     },
     order_no: {
       type: Number,
