@@ -28,37 +28,6 @@ const User = require("./../models/User");
     }
 */
 
-module.exports.signUp2 = async (req, res) => {
-  try {
-    const user = req.user;
-    let { role, designation, approved, dob, city, pin_code, email, name } =
-      req.body;
-
-    const userId = user.uid;
-    if (!name) {
-      name = user.name || "";
-    }
-
-    const userToSave = new User({
-      name,
-      userId,
-      email,
-      role,
-      designation,
-      approved,
-      dob,
-      city,
-      pin_code,
-    });
-    const data = await userToSave.save();
-
-    res.send({ ok: true, msg: "User Added Successfully!", data });
-  } catch (err) {
-    console.log(err);
-    res.send({ ok: false, msg: err?.message || "Something Went Wrong!" });
-  }
-};
-
 module.exports.signUp = async (req, res) => {
   try {
     const user = req.user;
