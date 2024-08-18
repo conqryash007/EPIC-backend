@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const userQuizAnswerSchema = new Schema(
   {
-    user_id: {
+    userId: {
       type: String,
     },
     quiz_id: {
@@ -15,7 +15,7 @@ const userQuizAnswerSchema = new Schema(
       ref: "Question",
     },
     answer_id: {
-      type: Number,
+      type: Schema.Types.ObjectId,
       ref: "Answer",
     },
     is_correct: {

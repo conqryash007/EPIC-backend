@@ -28,9 +28,13 @@ router.get("/full/:id", quizController.getFullQuizInfo);
 
 router.post("/create", quizController.createQuiz);
 
+router.post("/userQuiz", quizController.saveUserQuizStatus);
+router.post("/userQuiz/update", quizController.updateUserQuizStatus);
+
+router.post("/userAnswer", quizController.saveUsersAnswers);
+
 // ADD QUIZ QUESTION
 router.post("/question/create", quizController.addQuestion);
-
 // ADD QUIZ ANSWERS
 router.post("/answer/create", quizController.addAnswer);
 

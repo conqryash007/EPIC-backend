@@ -28,11 +28,46 @@ app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/child", childRoute);
 app.use("/api/quiz", quizRoute);
+
+const School = require("./models/School");
+app.get("/api/options", async (req, res) => {
+  try {
+    const schools = await School.find();
+
+    data = schools.map((curr) => {
+      return { label: curr.school_name, value: curr._id };
+    });
+
+    res.status(200).json({ ok: true, data });
+  } catch (error) {
+    res.status(500).json({ ok: false, msg: error.message });
+  }
+});
+app.get("/api/all/:coll", async (req, res) => {
+  let { coll } = req.params;
+
+  coll += `.js`;
+
+  try {
+    // Dynamically import the model module
+    const modelModule = await import(`./models/${coll}`);
+    const CollectionModel = modelModule.default;
+
+    if (!CollectionModel) {
+      return res.status(400).send(`Collection ${collection} not found`);
+    }
+
+    const docs = await CollectionModel.find();
+    res.status(200).json({ ok: true, data: docs });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error adding data to collection");
+  }
+});
 app.post("/api/add", async (req, res) => {
   const { collection, data } = req.body;
 
   try {
-    // Dynamically import the model module
     const modelModule = await import(`./models/${collection}`);
     const CollectionModel = modelModule.default;
 

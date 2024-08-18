@@ -5,7 +5,8 @@ const authenticateToken = require("./../middleware/authenticateToken");
 
 // USER
 router.get("/", authenticateToken, userController.getUsers);
-router.get("/:userId", authenticateToken, userController.getUserById);
+
+router.post("/", userController.getUserById);
 
 router.post("/update", authenticateToken, userController.updateUser);
 

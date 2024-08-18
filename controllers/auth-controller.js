@@ -41,6 +41,7 @@ module.exports.signUp = async (req, res) => {
 
     const userToSave = new User({
       userId,
+      ...req.body,
     });
     const data = await userToSave.save();
 

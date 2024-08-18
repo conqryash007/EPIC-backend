@@ -33,6 +33,12 @@ const UserSchema = new Schema(
     pin_code: {
       type: Number,
     },
+    no_of_children: {
+      type: Number,
+    },
+    school_id: {
+      type: Schema.Types.ObjectId,
+    },
   },
   {
     timestamps: true, // This will add created_at and updated_at fields

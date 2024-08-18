@@ -16,9 +16,11 @@ exports.getChildById = async (req, res) => {
 // Get all children by user id
 exports.getChildrenByUserId = async (req, res) => {
   try {
-    const child = await Child.findById(req.params.id);
-    if (!child) {
-      return res.status(404).json({ ok: false, msg: "Child not found" });
+    const userId = req.user.uid;
+
+    const child = await Child.find({ userId });
+    if (child.length < 1) {
+      return res.status(404).json({ ok: false, msg: "Children not found" });
     }
     res.status(200).json({ ok: true, data: child });
   } catch (error) {
@@ -26,16 +28,20 @@ exports.getChildrenByUserId = async (req, res) => {
   }
 };
 
-// Create a new child
-exports.createChild = async (req, res) => {
+// Create new children
+exports.createChildren = async (req, res) => {
   try {
     const userId = req.user.uid;
-    const childData = { userId, ...req.body };
+    const childrenData = req.body.childern.map((child) => ({
+      userId,
+      ...child,
+    }));
 
-    const child = new Child(childData);
-    await child.save();
+    const children = await Promise.all(
+      childrenData.map((childData) => new Child(childData).save())
+    );
 
-    res.status(201).json({ ok: true, data: child });
+    res.status(201).json({ ok: true, data: children });
   } catch (error) {
     res.status(400).json({ ok: false, msg: error.message });
   }
@@ -44,10 +50,7 @@ exports.createChild = async (req, res) => {
 // Update a child
 exports.updateChild = async (req, res) => {
   try {
-    const child = await Child.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const child = await Child.findByIdAndUpdate(req.params.id, req.body);
     if (!child) {
       return res.status(404).json({ ok: false, msg: "Child not found" });
     }

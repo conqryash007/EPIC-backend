@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const userQuizSchema = new Schema(
   {
-    user_id: {
+    userId: {
       type: String,
     },
     quiz_id: {
@@ -16,7 +16,7 @@ const userQuizSchema = new Schema(
       required: true,
     },
     child_id: {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "Child",
     },
     completed_status: {
