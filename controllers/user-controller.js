@@ -1,4 +1,16 @@
 const User = require("./../models/User");
+const jwt = require("jsonwebtoken");
+
+require("dotenv").config();
+
+function generateToken(id) {
+  const payload = {
+    id: id,
+  };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return token;
+}
 
 // Get all users
 module.exports.getUsers = async (req, res) => {
@@ -13,15 +25,22 @@ module.exports.getUsers = async (req, res) => {
 // Get a user by ID
 module.exports.getUserById = async (req, res) => {
   try {
-    const { mobile, email } = req.body;
+    const { mobile, email, verify, uid } = req.body;
 
     if (mobile) {
       const mobUser = await User.find({ mobile });
 
       if (mobUser.length > 0) {
-        return res
-          .status(200)
-          .json({ ok: true, data: mobUser[0], msg: "User exists" });
+        if (verify) {
+          const token = generateToken(mobUser[0]._id);
+          return res
+            .status(200)
+            .json({ ok: true, data: mobUser[0], msg: "User exists", token });
+        } else {
+          return res
+            .status(200)
+            .json({ ok: true, data: mobUser[0], msg: "User exists" });
+        }
       }
     }
 
@@ -29,9 +48,16 @@ module.exports.getUserById = async (req, res) => {
       const mailUser = await User.find({ email });
 
       if (mailUser.length > 0) {
-        return res
-          .status(200)
-          .json({ ok: true, data: mailUser[0], msg: "User exists" });
+        if (verify) {
+          const token = generateToken(mailUser[0]._id);
+          return res
+            .status(200)
+            .json({ ok: true, data: mailUser[0], msg: "User exists", token });
+        } else {
+          return res
+            .status(200)
+            .json({ ok: true, data: mailUser[0], msg: "User exists" });
+        }
       }
     }
 

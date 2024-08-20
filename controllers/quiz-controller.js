@@ -88,9 +88,9 @@ exports.saveUserQuizStatus = async (req, res) => {
 };
 exports.updateUserQuizStatus = async (req, res) => {
   try {
-    const userId = req.user.uid;
+    const id = req.params.id;
 
-    const userquiz = await UserQuiz.findOneAndUpdate({ userId }, req.body);
+    const userquiz = await UserQuiz.findByIdAndUpdate(id, req.body);
 
     res.status(200).json({ ok: true, data: userquiz });
   } catch (error) {
@@ -109,6 +109,16 @@ exports.saveUsersAnswers = async (req, res) => {
     const savedAnswers = await Promise.all(
       userAnswers.map((userAns) => new UserQuizAnswer(userAns).save())
     );
+
+    res.status(200).json({ ok: true, data: savedAnswers });
+  } catch (error) {
+    res.status(400).json({ ok: false, msg: error.message });
+  }
+};
+
+exports.evaluate = async (req, res) => {
+  try {
+    const userId = req.user.uid;
 
     res.status(200).json({ ok: true, data: savedAnswers });
   } catch (error) {

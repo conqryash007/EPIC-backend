@@ -2,14 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const usersChildController = require("../controllers/child-controller");
-const authenticateToken = require("./../middleware/authenticateToken");
+const jwtAuth = require("./../middleware/jwtAuth");
 
-router.get("/", authenticateToken, usersChildController.getChildrenByUserId);
-router.get("/:id", authenticateToken, usersChildController.getChildById);
+router.get("/", jwtAuth, usersChildController.getChildrenByUserId);
+router.get("/:id", jwtAuth, usersChildController.getChildById);
 
-router.post("/create", authenticateToken, usersChildController.createChildren);
+router.post("/create", jwtAuth, usersChildController.createChildren);
 
-router.post("/update/:id", authenticateToken, usersChildController.updateChild);
-router.post("/delete/:id", authenticateToken, usersChildController.deleteChild);
+router.post("/update/:id", jwtAuth, usersChildController.updateChild);
+router.post("/delete/:id", jwtAuth, usersChildController.deleteChild);
 
 module.exports = router;

@@ -9,11 +9,9 @@ const userQuizSchema = new Schema(
     quiz_id: {
       type: Schema.Types.ObjectId,
       ref: "Quiz",
-      required: true,
     },
     is_child: {
       type: Boolean,
-      required: true,
     },
     child_id: {
       type: Schema.Types.ObjectId,

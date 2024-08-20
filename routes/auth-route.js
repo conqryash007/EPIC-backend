@@ -3,6 +3,6 @@ const authenticateToken = require("./../middleware/authenticateToken");
 const authController = require("./../controllers/auth-controller");
 const router = express.Router();
 
-router.post("/signup", authenticateToken, authController.signUp);
+router.post("/signup", authController.signUp);
 
 module.exports = router;

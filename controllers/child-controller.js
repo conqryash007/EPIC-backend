@@ -16,7 +16,7 @@ exports.getChildById = async (req, res) => {
 // Get all children by user id
 exports.getChildrenByUserId = async (req, res) => {
   try {
-    const userId = req.user.uid;
+    const userId = req.user.id;
 
     const child = await Child.find({ userId });
     if (child.length < 1) {
@@ -31,7 +31,7 @@ exports.getChildrenByUserId = async (req, res) => {
 // Create new children
 exports.createChildren = async (req, res) => {
   try {
-    const userId = req.user.uid;
+    const userId = req.user.id;
     const childrenData = req.body.childern.map((child) => ({
       userId,
       ...child,

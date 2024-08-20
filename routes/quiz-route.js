@@ -24,18 +24,22 @@ router.post(
 router.get("/", quizController.getQuizes);
 router.get("/:id", quizController.getQuizById);
 
-router.get("/full/:id", quizController.getFullQuizInfo);
+router.get("/full/:id", authenticateToken, quizController.getFullQuizInfo);
 
-router.post("/create", quizController.createQuiz);
+router.post("/create", authenticateToken, quizController.createQuiz);
 
-router.post("/userQuiz", quizController.saveUserQuizStatus);
-router.post("/userQuiz/update", quizController.updateUserQuizStatus);
+router.post("/userQuiz", authenticateToken, quizController.saveUserQuizStatus);
+router.post(
+  "/userQuiz/update/:id",
+  authenticateToken,
+  quizController.updateUserQuizStatus
+);
 
-router.post("/userAnswer", quizController.saveUsersAnswers);
+router.post("/userAnswer", authenticateToken, quizController.saveUsersAnswers);
 
 // ADD QUIZ QUESTION
-router.post("/question/create", quizController.addQuestion);
+router.post("/question/create", authenticateToken, quizController.addQuestion);
 // ADD QUIZ ANSWERS
-router.post("/answer/create", quizController.addAnswer);
+router.post("/answer/create", authenticateToken, quizController.addAnswer);
 
 module.exports = router;
