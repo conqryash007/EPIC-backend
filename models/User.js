@@ -39,6 +39,9 @@ const UserSchema = new Schema(
     school_id: {
       type: Schema.Types.ObjectId,
     },
+    profile_pic: {
+      type: String,
+    },
   },
   {
     timestamps: true, // This will add created_at and updated_at fields

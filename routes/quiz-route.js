@@ -21,8 +21,8 @@ router.post(
 );
 
 // ADD QUIZ
-router.get("/", authenticateToken, quizController.getQuizes);
-router.get("/:id", authenticateToken, quizController.getQuizById);
+router.get("/", quizController.getQuizes);
+router.get("/:id", quizController.getQuizById);
 
 router.get("/full/:id", quizController.getFullQuizInfo);
 

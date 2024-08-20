@@ -102,10 +102,15 @@ exports.saveUsersAnswers = async (req, res) => {
   try {
     const userId = req.user.uid;
 
-    const userAnswer = new UserQuizAnswer({ userId, ...req.body });
-    const saved = await userAnswer.save();
+    const userAnswers = req.body.data.map((curr) => {
+      return { userId, ...curr };
+    });
 
-    res.status(200).json({ ok: true, data: saved });
+    const savedAnswers = await Promise.all(
+      userAnswers.map((userAns) => new UserQuizAnswer(userAns).save())
+    );
+
+    res.status(200).json({ ok: true, data: savedAnswers });
   } catch (error) {
     res.status(400).json({ ok: false, msg: error.message });
   }
