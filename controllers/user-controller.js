@@ -72,8 +72,8 @@ module.exports.getUserById = async (req, res) => {
 // Update a user
 module.exports.updateUser = async (req, res) => {
   try {
-    const userId = req.user.uid;
-    const user = await User.findOneAndUpdate({ userId }, req.body, {
+    const userId = req.user.id;
+    const user = await User.findByIdAndUpdate(userId, req.body, {
       runValidators: true,
     });
     if (!user) {
@@ -88,8 +88,8 @@ module.exports.updateUser = async (req, res) => {
 // Delete a user
 module.exports.deleteUser = async (req, res) => {
   try {
-    const userId = req.user.uid;
-    const user = await User.findOneAndDelete({ userId });
+    const userId = req.user.id;
+    const user = await User.findByIdAndDelete(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

@@ -2,6 +2,8 @@ const express = require("express");
 const authController = require("./../controllers/auth-controller");
 const router = express.Router();
 
-router.post("/signup", authController.signUp);
+const uploadToS3 = require("./../middleware/uploadTos3");
+
+router.post("/signup", uploadToS3, authController.signUp);
 
 module.exports = router;
