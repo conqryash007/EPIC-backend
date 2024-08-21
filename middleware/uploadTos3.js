@@ -22,8 +22,6 @@ const uploadToS3 = (req, res, next) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    return res.json({ body: req.body, file: req.file });
-
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: Date.now() + path.extname(req.file.originalname), // Unique filename with timestamp
