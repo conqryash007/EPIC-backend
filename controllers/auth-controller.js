@@ -1,5 +1,7 @@
 const User = require("./../models/User");
+const jwt = require("jsonwebtoken");
 
+require("dotenv").config();
 /*
  {
         "name": "Yash Gupta",
@@ -28,24 +30,52 @@ const User = require("./../models/User");
     }
 */
 
+const doesUserExists = async (mobile, email) => {
+  if (mobile) {
+    const mobUser = await User.find({ mobile });
+
+    if (mobUser.length > 0) {
+      return true;
+    }
+  }
+
+  if (email) {
+    const mailUser = await User.find({ email });
+
+    if (mailUser.length > 0) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+function generateToken(id) {
+  const payload = {
+    id: id,
+  };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return token;
+}
 module.exports.signUp = async (req, res) => {
   try {
-    const user = req.user;
+    const { mobile, email } = req.body;
 
-    const userId = user.uid;
+    const isPresent = await doesUserExists(mobile, email);
 
-    const currUser = await User.find({ userId });
-    if (currUser.length > 0) {
-      return res.send({ ok: false, msg: "User Already signed In" });
+    if (isPresent) {
+      return res.send({ ok: false, msg: "User Already Exits" });
     }
 
     const userToSave = new User({
-      userId,
       ...req.body,
     });
     const data = await userToSave.save();
 
-    res.send({ ok: true, msg: "User Added Successfully!", data });
+    const token = generateToken(data._id);
+
+    res.send({ ok: true, msg: "User Added Successfully!", data, token });
   } catch (err) {
     console.log(err);
     res.send({ ok: false, msg: err?.message || "Something Went Wrong!" });

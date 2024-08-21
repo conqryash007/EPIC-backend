@@ -22,6 +22,9 @@ const UsersChildSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "School",
     },
+    school_name: {
+      type: String,
+    },
   },
   {
     timestamps: true, // This will add created_at and updated_at fields
