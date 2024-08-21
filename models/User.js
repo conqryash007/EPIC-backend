@@ -32,7 +32,7 @@ const UserSchema = new Schema(
       type: Number,
     },
     school_id: {
-      type: Schema.Types.ObjectId,
+      type: String,
     },
     profile_pic: {
       type: String,
