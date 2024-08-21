@@ -5,7 +5,7 @@ const Topic = require("../models/QUIZ/Topic");
 // Create a new topic
 exports.createTopic = async (req, res) => {
   try {
-    const body = { created_by: req.user.uid, ...req.body };
+    const body = { created_by: req.user.id, ...req.body };
 
     const topic = new Topic(body);
     await topic.save();

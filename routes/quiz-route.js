@@ -4,21 +4,14 @@ const topicController = require("../controllers/topic-controller");
 const quizController = require("../controllers/quiz-controller");
 
 const authenticateToken = require("./../middleware/authenticateToken");
+const jwtAuth = require("./../middleware/jwtAuth");
 
-router.get("/topic", authenticateToken, topicController.getTopics);
-router.get("/topic/:id", authenticateToken, topicController.getTopicById);
+router.get("/topic", jwtAuth, topicController.getTopics);
+router.get("/topic/:id", jwtAuth, topicController.getTopicById);
 
-router.post("/topic/create", authenticateToken, topicController.createTopic);
-router.post(
-  "/topic/update/:id",
-  authenticateToken,
-  topicController.updateTopic
-);
-router.post(
-  "/topic/delete/:id",
-  authenticateToken,
-  topicController.deleteTopic
-);
+router.post("/topic/create", jwtAuth, topicController.createTopic);
+router.post("/topic/update/:id", jwtAuth, topicController.updateTopic);
+router.post("/topic/delete/:id", jwtAuth, topicController.deleteTopic);
 
 // ADD QUIZ
 router.get("/", quizController.getQuizes);
