@@ -17,9 +17,13 @@ exports.createTopic = async (req, res) => {
 };
 // Get all topics
 exports.getTopics = async (req, res) => {
+  
   try {
     const topics = await Topic.find();
-    res.status(200).json({ ok: true, data: topics });
+    const books = topics.filter(item => item.topic_type === 'Book');
+    const courses = topics.filter(item => item.topic_type === 'Course');
+
+    res.status(200).json({ ok: true, data: {'books':books, 'courses':courses} });
   } catch (error) {
     res.status(500).json({ ok: false, msg: error.message });
   }
