@@ -43,34 +43,28 @@ const s3 = new AWS.S3({
 module.exports.signUp = async (req, res) => {
   try {
     const { mobile, email } = req.body;
-
     const isPresent = await doesUserExists(mobile, email);
-
     if (isPresent) {
       return res.send({ ok: false, msg: "User Already Exits" });
     }
-
     const file = req.file;
-
-    // Read the file from the file system
     fs.readFile(file.path, (err, data) => {
       if (err) throw err;
-
-      // Set up S3 upload parameters
       const params = {
         Bucket: process.env.AWS_S3_BUCKET_NAME,
-        Key: file.originalname, // File name you want to save as in S3
+        Key: file.originalname, 
         Body: data,
         ContentType: file.mimetype,
-        ACL: "public-read", // Optional: make the file publicly accessible
+        ACL: "public-read", 
       };
-
-      // Uploading files to the bucket
       s3.upload(params, async (err, data) => {
+        console.log("upload data", data, params);
+
         if (err) {
           console.log("Error uploading file", err);
           throw new Error("Error uploading file");
         } else {
+
           const userToSave = new User({
             ...req.body,
             profile_pic: data.Location,
@@ -78,6 +72,7 @@ module.exports.signUp = async (req, res) => {
           const resData = await userToSave.save();
 
           const token = generateToken(resData._id);
+          console.log("upload data", token, resData);
 
           res.send({
             ok: true,
@@ -86,8 +81,6 @@ module.exports.signUp = async (req, res) => {
             token,
           });
         }
-
-        // Clean up file from the server after upload
         fs.unlinkSync(file.path);
       });
     });
@@ -96,31 +89,3 @@ module.exports.signUp = async (req, res) => {
     res.send({ ok: false, msg: err?.message || "Something Went Wrong!" });
   }
 };
-
-/*
- {
-        "name": "Yash Gupta",
-        "picture": "https://lh3.googleusercontent.com/a/ACg8ocL8en6Hh33W7IRqWjzKd8uqa6-gf2TzBXxKg6QJT12WPb-AXw=s96-c",
-        "iss": "https://securetoken.google.com/epic-test-4c318",
-        "aud": "epic-test-4c318",
-        "auth_time": 1722933135,
-        "user_id": "svFU3kQL1JU2C4uyVHafriapd133",
-        "sub": "svFU3kQL1JU2C4uyVHafriapd133",
-        "iat": 1722933135,
-        "exp": 1722936735,
-        "email": "work200010@gmail.com",
-        "email_verified": true,
-        "firebase": {
-            "identities": {
-                "google.com": [
-                    "102526335006057231276"
-                ],
-                "email": [
-                    "work200010@gmail.com"
-                ]
-            },
-            "sign_in_provider": "google.com"
-        },
-        "uid": "svFU3kQL1JU2C4uyVHafriapd133"
-    }
-*/
