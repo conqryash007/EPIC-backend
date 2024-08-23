@@ -17,13 +17,15 @@ exports.getQuizes = async (req, res) => {
   }
 };
 exports.getQuizById = async (req, res) => {
+  
   try {
     const quiz = await Quiz.findById(req.params.id);
 
     if (!quiz) {
-      return res.status(404).json({ ok: false, msg: "Quiz not found" });
+      return res.status(200).json({ ok: false, data: [],  msg: "Quiz not found" });
+
     }
-    res.status(200).json({ ok: true, data: quiz });
+    res.status(200).json({ ok: true,  data: [quiz], msg: "Quiz found" });
   } catch (error) {
     res.status(500).json({ ok: false, msg: error.message });
   }
