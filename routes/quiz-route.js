@@ -17,22 +17,28 @@ router.post("/topic/delete/:id", jwtAuth, topicController.deleteTopic);
 router.get("/", quizController.getQuizes);
 router.get("/:id", quizController.getQuizById);
 
-router.get("/full/:id", authenticateToken, quizController.getFullQuizInfo);
+router.get("/full/:id", jwtAuth, quizController.getFullQuizInfo);
 
-router.post("/create", authenticateToken, quizController.createQuiz);
+router.post("/create", jwtAuth, quizController.createQuiz);
 
-router.post("/userQuiz", authenticateToken, quizController.saveUserQuizStatus);
+router.get(
+  "/userQuiz/userQuizDetails",
+  jwtAuth,
+  quizController.getUserQuizDestails
+);
+
+router.post("/userQuiz", jwtAuth, quizController.saveUserQuizStatus);
 router.post(
   "/userQuiz/update/:id",
-  authenticateToken,
+  jwtAuth,
   quizController.updateUserQuizStatus
 );
 
-router.post("/userAnswer", authenticateToken, quizController.saveUsersAnswers);
+router.post("/userAnswer", jwtAuth, quizController.saveUsersAnswers);
 
 // ADD QUIZ QUESTION
-router.post("/question/create", authenticateToken, quizController.addQuestion);
+router.post("/question/create", jwtAuth, quizController.addQuestion);
 // ADD QUIZ ANSWERS
-router.post("/answer/create", authenticateToken, quizController.addAnswer);
+router.post("/answer/create", jwtAuth, quizController.addAnswer);
 
 module.exports = router;

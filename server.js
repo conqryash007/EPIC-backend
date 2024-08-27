@@ -91,13 +91,17 @@ app.post("/api/add", async (req, res) => {
 //     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`
 //   )
 
- mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => {
-      app.listen(3000);
-        console.log("Server started successfully👍 ",3000);
-      console.log('MongoDB connected')}
-    )
-    .catch(err => console.error('MongoDB connection error:', err));
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => {
+    app.listen(5000);
+    console.log("Server started successfully👍 ", 5000);
+    console.log("MongoDB connected");
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));

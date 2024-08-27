@@ -6,6 +6,13 @@ const userQuizAnswerSchema = new Schema(
     userId: {
       type: String,
     },
+    child_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Child",
+    },
+    is_child: {
+      type: Boolean,
+    },
     quiz_id: {
       type: Schema.Types.ObjectId,
       ref: "Quiz",

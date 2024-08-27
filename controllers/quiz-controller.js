@@ -2,7 +2,9 @@ const Quiz = require("./../models/QUIZ/Quiz");
 const Question = require("./../models/QUIZ/Question");
 const Answer = require("./../models/QUIZ/Answers");
 const UserQuiz = require("./../models/QUIZ/UserQuiz");
+const UserQuizStatus = require("./../models/QUIZ/UserQuiz");
 const UserQuizAnswer = require("./../models/QUIZ/UserQuizAnswer");
+const Child = require("../models/Child");
 
 // ---------------------------------------
 // ------------QUIZ-----------------------
@@ -17,15 +19,15 @@ exports.getQuizes = async (req, res) => {
   }
 };
 exports.getQuizById = async (req, res) => {
-  
   try {
     const quiz = await Quiz.findById(req.params.id);
 
     if (!quiz) {
-      return res.status(200).json({ ok: false, data: [],  msg: "Quiz not found" });
-
+      return res
+        .status(200)
+        .json({ ok: false, data: [], msg: "Quiz not found" });
     }
-    res.status(200).json({ ok: true,  data: [quiz], msg: "Quiz found" });
+    res.status(200).json({ ok: true, data: [quiz], msg: "Quiz found" });
   } catch (error) {
     res.status(500).json({ ok: false, msg: error.message });
   }
@@ -76,9 +78,49 @@ exports.getFullQuizInfo = async (req, res) => {
   }
 };
 
+exports.getUserQuizDestails = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const children = await Child.find({ userId });
+
+    const allQuizes = await Quiz.find();
+
+    const userQuizStatus = await UserQuizStatus.find({
+      userId,
+      is_child: false,
+    });
+
+    const childrenQuizesStatus = await Promise.all(
+      children.map((curr) => {
+        return UserQuizStatus.find({
+          child_id: curr._id,
+          userId,
+          is_child: true,
+        });
+      })
+    );
+    const finalChildrenStatus = [];
+    childrenQuizesStatus.forEach((curr) => {
+      if (curr.length > 0) {
+        finalChildrenStatus.push(curr[0]);
+      }
+    });
+
+    res.status(200).json({
+      ok: true,
+      userQuizStatus,
+      allQuizes,
+      childrenQuizStaus: finalChildrenStatus,
+    });
+  } catch (error) {
+    res.status(400).json({ ok: false, msg: error.message });
+  }
+};
+
 exports.saveUserQuizStatus = async (req, res) => {
   try {
-    const userId = req.user.uid;
+    const userId = req.user.id;
 
     const userquiz = new UserQuiz({ userId, ...req.body });
     const saved = await userquiz.save();
@@ -103,9 +145,10 @@ exports.updateUserQuizStatus = async (req, res) => {
 exports.saveUsersAnswers = async (req, res) => {
   try {
     const userId = req.user.uid;
+    const { data, child_id, is_child, quiz_id } = req.body;
 
-    const userAnswers = req.body.data.map((curr) => {
-      return { userId, ...curr };
+    const userAnswers = data.map((curr) => {
+      return { userId, child_id, is_child, quiz_id, ...curr };
     });
 
     const savedAnswers = await Promise.all(
