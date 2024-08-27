@@ -81,9 +81,7 @@ exports.getFullQuizInfo = async (req, res) => {
 exports.getUserQuizDestails = async (req, res) => {
   try {
     const userId = req.user.id;
-
     const children = await Child.find({ userId });
-
     const allQuizes = await Quiz.find();
 
     const userQuizStatus = await UserQuizStatus.find({
@@ -107,11 +105,26 @@ exports.getUserQuizDestails = async (req, res) => {
       }
     });
 
+    const allUserQuizesIds = userQuizStatus.map((curr) =>
+      curr.quiz_id.toString()
+    );
+    const allChildQuizesIds = finalChildrenStatus.map((curr) =>
+      curr.quiz_id.toString()
+    );
+    const availableQuiz = allQuizes.filter((curr) => {
+      console.log(
+        curr._id.toString(),
+        [...allUserQuizesIds, ...allChildQuizesIds].includes(curr._id)
+      );
+      return ![...allUserQuizesIds, ...allChildQuizesIds].includes(
+        curr._id.toString()
+      );
+    });
+
     res.status(200).json({
       ok: true,
-      userQuizStatus,
-      allQuizes,
-      childrenQuizStaus: finalChildrenStatus,
+      available: availableQuiz,
+      completed: [...userQuizStatus, ...finalChildrenStatus],
     });
   } catch (error) {
     res.status(400).json({ ok: false, msg: error.message });

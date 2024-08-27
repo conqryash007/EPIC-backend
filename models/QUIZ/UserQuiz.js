@@ -18,7 +18,11 @@ const userQuizSchema = new Schema(
       ref: "Child",
     },
     completed_status: {
-      type: Boolean,
+      type: String,
+      enum: ["start", "resume", "completed"],
+    },
+    rating: {
+      type: Number,
     },
     certificate_url: {
       type: String,
