@@ -43,7 +43,7 @@ module.exports.getUserById = async (req, res) => {
       const mobUser = await User.find({ mobile });
 
       if (mobUser?.length) {
-        handleUserResponse(mailUser, "Login Successfully..!");
+        handleUserResponse(mobUser, "Login Successfully..!");
       } else {
         return res
           .status(200)
