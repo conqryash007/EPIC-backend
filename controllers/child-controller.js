@@ -2,12 +2,18 @@ const Child = require("../models/Child");
 
 // Get a child by ID
 exports.getChildById = async (req, res) => {
+
   try {
-    const child = await Child.findById(req.params.id);
-    if (!child) {
-      return res.status(404).json({ ok: false, msg: "Child not found" });
+    const userId = req.user.id
+    const child = await Child.find({ userId } );
+    if (!child.length) {
+      return res.status(200).json({ ok: false, data:[], msg: "Child not found" });
     }
-    res.status(200).json({ ok: true, data: child });
+   const data = child.map((item) => {
+      return { label: item.name, value: item._id };
+    });
+
+    res.status(200).json({ ok: true, data });
   } catch (error) {
     res.status(500).json({ ok: false, msg: error.message });
   }
