@@ -66,7 +66,7 @@ exports.getFullQuizInfo = async (req, res) => {
     // Populate each question with its answers
     const questionsWithAnswers = await Promise.all(
       questions.map(async (question, index) => {
-        const flag = false;
+        let flag = false;
         if (Object.keys(userAns).length > 0) flag = true;
 
         const answers = await Answer.find({ question_id: question._id });
@@ -200,7 +200,7 @@ exports.updateUserQuizStatus = async (req, res) => {
 };
 
 exports.saveUsersAnswers = async (req, res) => {
-  console.log("ueer", req.user);
+  console.log("ueer", req.body);
   
   try {
     const userId = req.user.uid;
