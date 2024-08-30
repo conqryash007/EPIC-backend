@@ -57,10 +57,10 @@ exports.getFullQuizInfo = async (req, res) => {
       questions.map(async (question) => {
         const answers = await Answer.find({ question_id: question._id });
         return {
-          question: question,
+          question: question.question_text,
           answers: answers.map((answer) => ({
-            answer_text: answer.answer_text,
-            _id: answer._id,
+            label: answer.answer_text,
+            value: answer._id,
           })),
         };
       })
@@ -68,7 +68,7 @@ exports.getFullQuizInfo = async (req, res) => {
 
     res.status(200).json({
       quizId: quizId,
-      questions: questionsWithAnswers,
+      data: questionsWithAnswers,
     });
   } catch (err) {
     console.error(err);
@@ -105,26 +105,42 @@ exports.getUserQuizDestails = async (req, res) => {
       }
     });
 
+    const resumeQuiz = [];
+    const startQuiz = [];
+    const completedQuiz = [];
+
+    [...userQuizStatus, ...finalChildrenStatus].forEach((curr) => {
+      if (curr.completed_status === "resume") {
+        resumeQuiz.push(curr);
+      } else if (curr.completed_status === "start") {
+        startQuiz.push(curr);
+      } else {
+        completedQuiz.push(curr);
+      }
+    });
+
     const allUserQuizesIds = userQuizStatus.map((curr) =>
       curr.quiz_id.toString()
     );
     const allChildQuizesIds = finalChildrenStatus.map((curr) =>
       curr.quiz_id.toString()
     );
-    const availableQuiz = allQuizes.filter((curr) => {
-      console.log(
-        curr._id.toString(),
-        [...allUserQuizesIds, ...allChildQuizesIds].includes(curr._id)
-      );
+    let availableQuiz = allQuizes.filter((curr) => {
       return ![...allUserQuizesIds, ...allChildQuizesIds].includes(
         curr._id.toString()
       );
     });
+    availableQuiz = availableQuiz.map((curr, i) => {
+      let x = curr.toObject();
+      x.completed_status = "start";
+
+      return x;
+    });
 
     res.status(200).json({
       ok: true,
-      available: availableQuiz,
-      completed: [...userQuizStatus, ...finalChildrenStatus],
+      available: [...availableQuiz, ...resumeQuiz, ...startQuiz],
+      completed: [...completedQuiz],
     });
   } catch (error) {
     res.status(400).json({ ok: false, msg: error.message });
