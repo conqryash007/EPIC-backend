@@ -17,7 +17,7 @@ router.post("/topic/delete/:id", jwtAuth, topicController.deleteTopic);
 router.get("/", quizController.getQuizes);
 router.get("/:id", quizController.getQuizById);
 
-router.get("/full/:id", jwtAuth, quizController.getFullQuizInfo);
+router.post("/full", jwtAuth, quizController.getFullQuizInfo);
 
 router.post("/create", jwtAuth, quizController.createQuiz);
 

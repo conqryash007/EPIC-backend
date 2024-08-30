@@ -15,6 +15,12 @@ const quizSchema = new Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+    },
+    students: {
+      type: String,
+    },
   },
   {
     timestamps: true, // This will automatically update created_at and updated_at

@@ -47,27 +47,43 @@ exports.createQuiz = async (req, res) => {
 
 exports.getFullQuizInfo = async (req, res) => {
   try {
-    const quizId = req.params.id;
+    const userId = req.user.id;
+    const { child_id, is_child, quiz_id } = req.body;
 
     // Find all questions related to the quiz
-    const questions = await Question.find({ quiz_id: quizId });
+    const questions = await Question.find({ quiz_id });
+
+    const getUserAnswers = await UserQuizAnswer.find({
+      child_id,
+      is_child,
+      userId,
+    });
+    let userAns = {};
+    if (getUserAnswers.length > 0) {
+      userAns = getUserAnswers[0].answers;
+    }
 
     // Populate each question with its answers
     const questionsWithAnswers = await Promise.all(
       questions.map(async (question) => {
+        const flag = false;
+        if (Object.keys(userAns).length > 0) flag = true;
+
         const answers = await Answer.find({ question_id: question._id });
         return {
+          id: question._id,
           question: question.question_text,
           answers: answers.map((answer) => ({
             label: answer.answer_text,
             value: answer._id,
           })),
+          selectedOption: flag ? userAns[question._id.toString()] || "" : "",
         };
       })
     );
 
     res.status(200).json({
-      quizId: quizId,
+      quiz_id,
       data: questionsWithAnswers,
     });
   } catch (err) {
@@ -110,12 +126,23 @@ exports.getUserQuizDestails = async (req, res) => {
     const completedQuiz = [];
 
     [...userQuizStatus, ...finalChildrenStatus].forEach((curr) => {
-      if (curr.completed_status === "resume") {
-        resumeQuiz.push(curr);
-      } else if (curr.completed_status === "start") {
-        startQuiz.push(curr);
+      let x = curr.toObject();
+
+      allQuizes.forEach((ele) => {
+        if (ele._id.toString() === x.quiz_id.toString()) {
+          x.title = ele.title;
+          x.description = ele.description;
+          x.image = ele.image;
+          x.students = ele.students;
+        }
+      });
+
+      if (x.completed_status === "resume") {
+        resumeQuiz.push(x);
+      } else if (x.completed_status === "start") {
+        startQuiz.push(x);
       } else {
-        completedQuiz.push(curr);
+        completedQuiz.push(x);
       }
     });
 
@@ -176,15 +203,46 @@ exports.saveUsersAnswers = async (req, res) => {
     const userId = req.user.uid;
     const { data, child_id, is_child, quiz_id } = req.body;
 
-    const userAnswers = data.map((curr) => {
-      return { userId, child_id, is_child, quiz_id, ...curr };
+    let userAnswer = await UserQuizAnswer.find({
+      child_id,
+      is_child,
+      quiz_id,
+      userId,
     });
+    let userAns = {};
+    if (userAnswer.length > 0) {
+      userAns = { ...userAnswer[0].answers };
 
-    const savedAnswers = await Promise.all(
-      userAnswers.map((userAns) => new UserQuizAnswer(userAns).save())
-    );
+      data.forEach((curr) => {
+        userAns[curr.id] = curr.selectedOption;
+      });
 
-    res.status(200).json({ ok: true, data: savedAnswers });
+      userAnswer = await UserQuizAnswer.findOneAndUpdate(
+        {
+          child_id,
+          is_child,
+          quiz_id,
+          userId,
+        },
+        { answers: userAns }
+      );
+    } else {
+      data.forEach((curr) => {
+        userAns[curr.id] = curr.selectedOption;
+      });
+
+      userAnswer = new UserQuizAnswer({
+        child_id,
+        is_child,
+        quiz_id,
+        userId,
+        answers: userAns,
+      });
+
+      await userAnswer.save();
+    }
+
+    res.status(200).json({ ok: true, data: userAnswer });
   } catch (error) {
     res.status(400).json({ ok: false, msg: error.message });
   }
