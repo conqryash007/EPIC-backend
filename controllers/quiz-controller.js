@@ -54,28 +54,25 @@ exports.getFullQuizInfo = async (req, res) => {
     const questions = await Question.find({ quiz_id });
 
     const getUserAnswers = await UserQuizAnswer.find({
-      quiz_id,
       child_id,
       is_child,
       userId,
     });
-
-    console.log(getUserAnswers);
     let userAns = {};
-
     if (getUserAnswers.length > 0) {
       userAns = getUserAnswers[0].answers;
     }
 
     // Populate each question with its answers
     const questionsWithAnswers = await Promise.all(
-      questions.map(async (question) => {
-        let flag = false;
+      questions.map(async (question, index) => {
+        const flag = false;
         if (Object.keys(userAns).length > 0) flag = true;
 
         const answers = await Answer.find({ question_id: question._id });
         return {
           id: question._id,
+          que_id: index+1,
           question: question.question_text,
           answers: answers.map((answer) => ({
             label: answer.answer_text,
@@ -203,8 +200,10 @@ exports.updateUserQuizStatus = async (req, res) => {
 };
 
 exports.saveUsersAnswers = async (req, res) => {
+  console.log("ueer", req.user);
+  
   try {
-    const userId = req.user.id;
+    const userId = req.user.uid;
     const { data, child_id, is_child, quiz_id } = req.body;
 
     let userAnswer = await UserQuizAnswer.find({
