@@ -60,7 +60,6 @@ exports.getFullQuizInfo = async (req, res) => {
       userId,
     });
 
-    console.log(getUserAnswers);
     let userAns = {};
 
     if (getUserAnswers.length > 0) {
