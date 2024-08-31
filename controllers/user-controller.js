@@ -120,7 +120,7 @@ module.exports.updateUser = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(200).json({ message: "User not found" });
     }
     res.status(200).json({ ok: true, data: user });
   } catch (error) {
@@ -134,7 +134,7 @@ module.exports.deleteUser = async (req, res) => {
     const userId = req.user.id;
     const user = await User.findByIdAndDelete(userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(200).json({ message: "User not found" });
     }
     res.status(200).json({ ok: true, msg: "User deleted" });
   } catch (error) {

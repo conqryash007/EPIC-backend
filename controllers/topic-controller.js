@@ -36,7 +36,7 @@ exports.getTopicById = async (req, res) => {
     const topic = await Topic.findById(req.params.id);
 
     if (!topic) {
-      return res.status(404).json({ ok: false, msg: "Topic not found" });
+      return res.status(200).json({ ok: false, msg: "Topic not found" });
     }
     res.status(200).json({ ok: true, data: topic });
   } catch (error) {
@@ -50,7 +50,7 @@ exports.updateTopic = async (req, res) => {
       runValidators: true,
     });
     if (!topic) {
-      return res.status(404).json({ ok: false, msg: "Topic not found" });
+      return res.status(200).json({ ok: false, msg: "Topic not found" });
     }
     res.status(200).json({ ok: true, data: topic });
   } catch (error) {
@@ -62,7 +62,7 @@ exports.deleteTopic = async (req, res) => {
   try {
     const topic = await User.findOneAndDelete(req.param.id);
     if (!topic) {
-      return res.status(404).json({ message: "Topic not found" });
+      return res.status(200).json({ message: "Topic not found" });
     }
 
     res.status(200).json({ ok: true, msg: "Topic deleted" });

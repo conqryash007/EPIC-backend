@@ -54,27 +54,26 @@ exports.getFullQuizInfo = async (req, res) => {
     const questions = await Question.find({ quiz_id });
 
     const getUserAnswers = await UserQuizAnswer.find({
-      quiz_id,
       child_id,
       is_child,
       userId,
     });
 
     let userAns = {};
-
     if (getUserAnswers.length > 0) {
       userAns = getUserAnswers[0].answers;
     }
 
     // Populate each question with its answers
     const questionsWithAnswers = await Promise.all(
-      questions.map(async (question) => {
+      questions.map(async (question, index) => {
         let flag = false;
         if (Object.keys(userAns).length > 0) flag = true;
 
         const answers = await Answer.find({ question_id: question._id });
         return {
           id: question._id,
+          que_id: index + 1,
           question: question.question_text,
           answers: answers.map((answer) => ({
             label: answer.answer_text,
@@ -203,7 +202,7 @@ exports.updateUserQuizStatus = async (req, res) => {
 
 exports.saveUsersAnswers = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.uid;
     const { data, child_id, is_child, quiz_id } = req.body;
 
     let userAnswer = await UserQuizAnswer.find({
@@ -230,19 +229,7 @@ exports.saveUsersAnswers = async (req, res) => {
         { answers: userAns }
       );
     } else {
-      data.forEach((curr) => {
-        userAns[curr.id] = curr.selectedOption;
-      });
-
-      userAnswer = new UserQuizAnswer({
-        child_id,
-        is_child,
-        quiz_id,
-        userId,
-        answers: userAns,
-      });
-
-      await userAnswer.save();
+      res.status(200).json({ ok: false, data: userAnswer });
     }
 
     res.status(200).json({ ok: true, data: userAnswer });
