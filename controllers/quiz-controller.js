@@ -202,7 +202,7 @@ exports.updateUserQuizStatus = async (req, res) => {
 
 exports.saveUsersAnswers = async (req, res) => {
   try {
-    const userId = req.user.uid;
+    const userId = req.user.id;
     const { data, child_id, is_child, quiz_id } = req.body;
 
     let userAnswer = await UserQuizAnswer.find({
@@ -229,7 +229,19 @@ exports.saveUsersAnswers = async (req, res) => {
         { answers: userAns }
       );
     } else {
-      res.status(200).json({ ok: false, data: userAnswer });
+      data.forEach((curr) => {
+        userAns[curr.id] = curr.selectedOption;
+      });
+
+      userAnswer = new UserQuizAnswer({
+        child_id,
+        is_child,
+        quiz_id,
+        userId,
+        answers: userAns,
+      });
+
+      await userAnswer.save();
     }
 
     res.status(200).json({ ok: true, data: userAnswer });
@@ -238,15 +250,6 @@ exports.saveUsersAnswers = async (req, res) => {
   }
 };
 
-exports.evaluate = async (req, res) => {
-  try {
-    const userId = req.user.uid;
-
-    res.status(200).json({ ok: true, data: savedAnswers });
-  } catch (error) {
-    res.status(400).json({ ok: false, msg: error.message });
-  }
-};
 // ------------END----------------------
 
 exports.addQuestion = async (req, res) => {

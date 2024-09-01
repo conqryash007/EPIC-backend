@@ -6,6 +6,9 @@ const UserSchema = new Schema(
     email: {
       type: String,
     },
+    name: {
+      type: String,
+    },
     mobile: {
       type: Number,
     },
@@ -40,6 +43,7 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true, // This will add created_at and updated_at fields
+    strict: false,
   }
 );
 

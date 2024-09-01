@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const topicController = require("../controllers/topic-controller");
 const quizController = require("../controllers/quiz-controller");
+const evaluateController = require("./../controllers/evaluate-controller");
 
 const authenticateToken = require("./../middleware/authenticateToken");
 const jwtAuth = require("./../middleware/jwtAuth");
@@ -35,6 +36,8 @@ router.post(
 );
 
 router.post("/userAnswer", jwtAuth, quizController.saveUsersAnswers);
+
+router.post("/evaluate", jwtAuth, evaluateController.evaluate);
 
 // ADD QUIZ QUESTION
 router.post("/question/create", jwtAuth, quizController.addQuestion);

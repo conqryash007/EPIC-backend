@@ -8,6 +8,7 @@ const uploadToS3 = require("./../middleware/uploadTos3");
 
 // USER
 router.get("/", jwtAuth, userController.getUsers);
+router.get("/:id", jwtAuth, userController.getUsersByUserId);
 
 router.post("/", userController.getUserById);
 

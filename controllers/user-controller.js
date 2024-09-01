@@ -112,6 +112,15 @@ module.exports.getUserById = async (req, res) => {
   // }
 };
 
+module.exports.getUsersByUserId = async (req, res) => {
+  try {
+    const users = await User.findById(req.params.id);
+    res.status(200).json({ ok: true, data: users });
+  } catch (error) {
+    res.status(500).json({ ok: false, msg: error.message });
+  }
+};
+
 // Update a user
 module.exports.updateUser = async (req, res) => {
   try {

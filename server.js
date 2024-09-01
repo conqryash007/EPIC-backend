@@ -100,8 +100,8 @@ mongoose
     }
   )
   .then(() => {
-    app.listen(3000);
-    console.log("Server started successfully👍 ", 3000);
+    app.listen(5000);
+    console.log("Server started successfully👍 ", 5000);
     console.log("MongoDB connected");
   })
   .catch((err) => console.error("MongoDB connection error:", err));
