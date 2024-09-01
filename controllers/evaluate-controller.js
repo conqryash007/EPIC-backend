@@ -217,11 +217,26 @@ exports.evaluate = async (req, res) => {
         const s3Response = await uploadToS3(pdf);
 
         await afterPassingQuiz(child_id, is_child, userId, s3Response);
+
+        return res.status(200).json({
+          ok: true,
+          passed: true,
+          certificate_url: s3Response,
+          correctAns,
+          totalQuestion,
+          percentage,
+        });
       } else {
         await afterFailingQuiz(child_id, is_child, userId);
-      }
 
-      res.status(200).json({ ok: true, correctAns, totalQuestion, percentage });
+        return res.status(200).json({
+          ok: true,
+          passed: false,
+          correctAns,
+          totalQuestion,
+          percentage,
+        });
+      }
     } else {
       res.status(200).json({ ok: false, msg: "No User Found!" });
     }
