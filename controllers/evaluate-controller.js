@@ -176,7 +176,6 @@ exports.evaluate = async (req, res) => {
       });
 
       let percentage = (100 * correctAns) / totalQuestion;
-      percentage = 60;
       if (percentage >= 60) {
         const data = {
           name: "",
