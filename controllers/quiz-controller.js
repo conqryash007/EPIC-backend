@@ -163,6 +163,7 @@ exports.getUserQuizDestails = async (req, res) => {
     availableQuiz = availableQuiz.map((curr, i) => {
       let x = curr.toObject();
       x.completed_status = "start";
+      x.quiz_id = curr._id;
 
       return x;
     });
