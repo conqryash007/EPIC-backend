@@ -177,10 +177,14 @@ module.exports.updateUser = async (req, res) => {
             console.log("Error uploading file", err);
             throw new Error("Error uploading file");
           } else {
-            const userRes = await User.findByIdAndUpdate(userId, {
-              ...req.body,
-              profile_pic: data.Location,
-            });
+            const userRes = await User.findByIdAndUpdate(
+              userId,
+              {
+                ...req.body,
+                profile_pic: data.Location,
+              },
+              { new: true }
+            );
 
             res.send({
               ok: true,
@@ -193,9 +197,13 @@ module.exports.updateUser = async (req, res) => {
         });
       });
     } else {
-      const userRes = await User.findByIdAndUpdate(userId, {
-        ...req.body,
-      });
+      const userRes = await User.findByIdAndUpdate(
+        userId,
+        {
+          ...req.body,
+        },
+        { new: true }
+      );
 
       return res.send({
         ok: true,

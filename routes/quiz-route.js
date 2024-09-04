@@ -14,6 +14,12 @@ router.post("/topic/create", jwtAuth, topicController.createTopic);
 router.post("/topic/update/:id", jwtAuth, topicController.updateTopic);
 router.post("/topic/delete/:id", jwtAuth, topicController.deleteTopic);
 
+router.post(
+  "/topic/selection",
+  jwtAuth,
+  topicController.saveUserselectionTopic
+);
+
 // ADD QUIZ
 router.get("/", quizController.getQuizes);
 router.get("/:id", quizController.getQuizById);

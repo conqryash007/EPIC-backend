@@ -5,6 +5,7 @@ const UserQuiz = require("./../models/QUIZ/UserQuiz");
 const UserQuizStatus = require("./../models/QUIZ/UserQuiz");
 const UserQuizAnswer = require("./../models/QUIZ/UserQuizAnswer");
 const Child = require("../models/Child");
+const UserSelection = require("./../models/UserSelection");
 
 // ---------------------------------------
 // ------------QUIZ-----------------------
@@ -98,16 +99,32 @@ exports.getFullQuizInfo = async (req, res) => {
 
 exports.getUserQuizDestails = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const children = await Child.find({ userId });
-    const allQuizes = await Quiz.find();
+    let userId = req.user.id;
 
-    const userQuizStatus = await UserQuizStatus.find({
+    let userSelection = await UserSelection.find({ userId });
+
+    if (userSelection.length === 0)
+      return res.status(200).json({ ok: false, msg: "No Selection Exists" });
+    if (!userSelection[0].topic_id)
+      return res
+        .status(200)
+        .json({ ok: false, msg: "No Selection Exists of topic id" });
+
+    let getListOfQuzes = await Quiz.find({
+      topic_id: userSelection[0].topic_id,
+    });
+
+    let quizIds = getListOfQuzes.map((curr) => curr._id.toString());
+
+    let children = await Child.find({ userId });
+    let allQuizes = await Quiz.find();
+
+    let userQuizStatus = await UserQuizStatus.find({
       userId,
       is_child: false,
     });
 
-    const childrenQuizesStatus = await Promise.all(
+    let childrenQuizesStatus = await Promise.all(
       children.map((curr) => {
         return UserQuizStatus.find({
           child_id: curr._id.toString(),
@@ -117,16 +134,16 @@ exports.getUserQuizDestails = async (req, res) => {
       })
     );
 
-    const finalChildrenStatus = [];
+    let finalChildrenStatus = [];
     childrenQuizesStatus.forEach((curr) => {
       if (curr.length > 0) {
         finalChildrenStatus.push(curr[0]);
       }
     });
 
-    const resumeQuiz = [];
-    const startQuiz = [];
-    const completedQuiz = [];
+    let resumeQuiz = [];
+    let startQuiz = [];
+    let completedQuiz = [];
 
     [...userQuizStatus, ...finalChildrenStatus].forEach((curr) => {
       let x = curr.toObject();
@@ -149,10 +166,10 @@ exports.getUserQuizDestails = async (req, res) => {
       }
     });
 
-    const allUserQuizesIds = userQuizStatus.map((curr) =>
+    let allUserQuizesIds = userQuizStatus.map((curr) =>
       curr.quiz_id.toString()
     );
-    const allChildQuizesIds = finalChildrenStatus.map((curr) =>
+    let allChildQuizesIds = finalChildrenStatus.map((curr) =>
       curr.quiz_id.toString()
     );
     let availableQuiz = allQuizes.filter((curr) => {
@@ -166,6 +183,20 @@ exports.getUserQuizDestails = async (req, res) => {
       x.quiz_id = curr._id;
 
       return x;
+    });
+
+    availableQuiz = availableQuiz.filter((curr) => {
+      return quizIds.includes(curr.quiz_id.toString());
+    });
+    resumeQuiz = resumeQuiz.filter((curr) => {
+      return quizIds.includes(curr.quiz_id.toString());
+    });
+    startQuiz = startQuiz.filter((curr) => {
+      return quizIds.includes(curr.quiz_id.toString());
+    });
+
+    completedQuiz = completedQuiz.filter((curr) => {
+      return quizIds.includes(curr.quiz_id.toString());
     });
 
     res.status(200).json({
@@ -194,7 +225,9 @@ exports.updateUserQuizStatus = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const userquiz = await UserQuiz.findByIdAndUpdate(id, req.body);
+    const userquiz = await UserQuiz.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
 
     res.status(200).json({ ok: true, data: userquiz });
   } catch (error) {
@@ -228,7 +261,8 @@ exports.saveUsersAnswers = async (req, res) => {
           quiz_id,
           userId,
         },
-        { answers: userAns }
+        { answers: userAns },
+        { new: true }
       );
     } else {
       data.forEach((curr) => {

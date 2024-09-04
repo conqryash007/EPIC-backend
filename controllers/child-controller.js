@@ -57,7 +57,9 @@ exports.createChildren = async (req, res) => {
 // Update a child
 exports.updateChild = async (req, res) => {
   try {
-    const child = await Child.findByIdAndUpdate(req.params.id, req.body);
+    const child = await Child.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     if (!child) {
       return res.status(200).json({ ok: false, msg: "Child not found" });
     }

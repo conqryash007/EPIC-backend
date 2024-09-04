@@ -1,4 +1,5 @@
 const Topic = require("../models/QUIZ/Topic");
+const UserSeletion = require("./../models/UserSelection");
 
 // ---------------------------------------
 // ------------TOPIC----------------------
@@ -30,6 +31,33 @@ exports.getTopics = async (req, res) => {
   }
 };
 
+exports.saveUserselectionTopic = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const xx = await UserSeletion.find({ userId });
+
+    if (xx.length > 0) {
+      const data = await UserSeletion.findOneAndUpdate(
+        { userId },
+        { ...req.body },
+        { new: true }
+      );
+
+      res
+        .status(201)
+        .json({ ok: true, data, msg: "Updated User Selction details" });
+    } else {
+      const userTopic = new UserSeletion({ userId, ...req.body });
+      const data = await userTopic.save();
+
+      res.status(201).json({ ok: true, data });
+    }
+  } catch (error) {
+    res.status(400).json({ ok: false, msg: error.message });
+  }
+};
+
 // Get a topic by ID
 exports.getTopicById = async (req, res) => {
   try {
@@ -47,7 +75,7 @@ exports.getTopicById = async (req, res) => {
 exports.updateTopic = async (req, res) => {
   try {
     const topic = await Topic.findByIdAndUpdate(req.params.id, req.body, {
-      runValidators: true,
+      new: true,
     });
     if (!topic) {
       return res.status(200).json({ ok: false, msg: "Topic not found" });

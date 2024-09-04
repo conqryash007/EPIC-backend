@@ -117,7 +117,8 @@ const afterFailingQuiz = async (child_id, is_child, userId, quiz_id) => {
     { child_id, is_child, userId, quiz_id },
     {
       completed_status: "start",
-    }
+    },
+    { new: true }
   );
 };
 
