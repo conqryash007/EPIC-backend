@@ -110,12 +110,13 @@ exports.getUserQuizDestails = async (req, res) => {
     const childrenQuizesStatus = await Promise.all(
       children.map((curr) => {
         return UserQuizStatus.find({
-          child_id: curr._id,
+          child_id: curr._id.toString(),
           userId,
           is_child: true,
         });
       })
     );
+
     const finalChildrenStatus = [];
     childrenQuizesStatus.forEach((curr) => {
       if (curr.length > 0) {
