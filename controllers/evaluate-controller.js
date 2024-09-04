@@ -112,18 +112,18 @@ async function uploadToS3(pdfBytes) {
   return data.Location;
 }
 
-const afterFailingQuiz = async (child_id, is_child, userId) => {
+const afterFailingQuiz = async (child_id, is_child, userId, quiz_id) => {
   await UserQuiz.findOneAndUpdate(
-    { child_id, is_child, userId },
+    { child_id, is_child, userId, quiz_id },
     {
       completed_status: "start",
     }
   );
 };
 
-const afterPassingQuiz = async (child_id, is_child, userId, link) => {
+const afterPassingQuiz = async (child_id, is_child, userId, quiz_id, link) => {
   await UserQuiz.findOneAndUpdate(
-    { child_id, is_child, userId },
+    { child_id, is_child, userId, quiz_id },
     {
       completed_status: "completed",
       certificate_url: link,
@@ -176,6 +176,8 @@ exports.evaluate = async (req, res) => {
       });
 
       let percentage = (100 * correctAns) / totalQuestion;
+
+
       if (percentage >= 60) {
         const data = {
           name: "",
@@ -215,7 +217,7 @@ exports.evaluate = async (req, res) => {
         );
         const s3Response = await uploadToS3(pdf);
 
-        await afterPassingQuiz(child_id, is_child, userId, s3Response);
+        await afterPassingQuiz(child_id, is_child, userId, quiz_id, s3Response);
 
         return res.status(200).json({
           ok: true,
@@ -226,7 +228,7 @@ exports.evaluate = async (req, res) => {
           percentage,
         });
       } else {
-        await afterFailingQuiz(child_id, is_child, userId);
+        await afterFailingQuiz(child_id, is_child, userId, quiz_id);
 
         return res.status(200).json({
           ok: true,
