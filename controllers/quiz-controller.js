@@ -221,13 +221,11 @@ exports.saveUserQuizStatus = async (req, res) => {
       quiz_id,
     });
     if (userquizCurr.length > 0) {
-      res
-        .status(200)
-        .json({
-          ok: true,
-          data: userquizCurr,
-          msg: "User Quiz Data Already Exists",
-        });
+      res.status(200).json({
+        ok: true,
+        data: userquizCurr,
+        msg: "User Quiz Data Already Exists",
+      });
     }
 
     const userquiz = new UserQuiz({ userId, ...req.body });
@@ -242,9 +240,7 @@ exports.updateUserQuizStatus = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const userquiz = await UserQuiz.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    const userquiz = await UserQuiz.findByIdAndUpdate(id, req.body);
 
     res.status(200).json({ ok: true, data: userquiz });
   } catch (error) {

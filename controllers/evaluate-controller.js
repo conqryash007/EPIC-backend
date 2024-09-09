@@ -113,13 +113,20 @@ async function uploadToS3(pdfBytes) {
 }
 
 const afterFailingQuiz = async (child_id, is_child, userId, quiz_id) => {
-  await UserQuiz.findOneAndUpdate(
-    { child_id, is_child, userId, quiz_id },
-    {
-      completed_status: "start",
-    },
-    { new: true }
-  );
+  const o1 = await UserQuiz.findOneAndDelete({
+    child_id,
+    is_child,
+    userId,
+    quiz_id,
+  });
+  const o2 = await UserQuizAnswer.findOneAndDelete({
+    child_id,
+    is_child,
+    userId,
+    quiz_id,
+  });
+
+  console.log(o1, o2);
 };
 
 const afterPassingQuiz = async (child_id, is_child, userId, quiz_id, link) => {
