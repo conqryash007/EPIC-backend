@@ -45,46 +45,60 @@ app.get("/api/options", async (req, res) => {
     res.status(500).json({ ok: false, msg: error.message });
   }
 });
-app.get("/api/all/:coll", async (req, res) => {
-  let { coll } = req.params;
 
-  coll += `.js`;
-
+const Version = require("./models/Version");
+app.get("/api/version", async (req, res) => {
   try {
-    // Dynamically import the model module
-    const modelModule = await import(`./models/${coll}`);
-    const CollectionModel = modelModule.default;
+    const version = await Version.find();
+    const x = version[0].toObject();
+    const data = { version: x.version, link: x.link };
 
-    if (!CollectionModel) {
-      return res.status(400).send(`Collection ${collection} not found`);
-    }
-
-    const docs = await CollectionModel.find();
-    res.status(200).json({ ok: true, data: docs });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error adding data to collection");
+    res.status(200).json({ ok: true, data });
+  } catch (error) {
+    res.status(500).json({ ok: false, msg: error.message });
   }
 });
-app.post("/api/add", async (req, res) => {
-  const { collection, data } = req.body;
 
-  try {
-    const modelModule = await import(`./models/${collection}`);
-    const CollectionModel = modelModule.default;
+// app.get("/api/all/:coll", async (req, res) => {
+//   let { coll } = req.params;
 
-    if (!CollectionModel) {
-      return res.status(400).send(`Collection ${collection} not found`);
-    }
+//   coll += `.js`;
 
-    const doc = new CollectionModel(data);
-    await doc.save();
-    res.send(`Data added to ${collection} collection`);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error adding data to collection");
-  }
-});
+//   try {
+//     // Dynamically import the model module
+//     const modelModule = await import(`./models/${coll}`);
+//     const CollectionModel = modelModule.default;
+
+//     if (!CollectionModel) {
+//       return res.status(400).send(`Collection ${collection} not found`);
+//     }
+
+//     const docs = await CollectionModel.find();
+//     res.status(200).json({ ok: true, data: docs });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Error adding data to collection");
+//   }
+// });
+// app.post("/api/add", async (req, res) => {
+//   const { collection, data } = req.body;
+
+//   try {
+//     const modelModule = await import(`./models/${collection}`);
+//     const CollectionModel = modelModule.default;
+
+//     if (!CollectionModel) {
+//       return res.status(400).send(`Collection ${collection} not found`);
+//     }
+
+//     const doc = new CollectionModel(data);
+//     await doc.save();
+//     res.send(`Data added to ${collection} collection`);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Error adding data to collection");
+//   }
+// });
 
 // mongoose
 //   .connect(
@@ -93,7 +107,7 @@ app.post("/api/add", async (req, res) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hjfrm.mongodb.net/epic-test?retryWrites=true&w=majority&appName=Cluster0`,
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@epic-cluster.rmpz7.mongodb.net/epic?retryWrites=true&w=majority&appName=epic-cluster`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
