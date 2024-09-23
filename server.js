@@ -9,6 +9,7 @@ const authRoute = require("./routes/auth-route");
 const userRoute = require("./routes/user-route");
 const childRoute = require("./routes/child-route");
 const quizRoute = require("./routes/quiz-route");
+const sutraRoute = require("./routes/sutra-route");
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/child", childRoute);
 app.use("/api/quiz", quizRoute);
+app.use("/api/sutra", sutraRoute);
 
 const School = require("./models/School");
 app.get("/api/options", async (req, res) => {

@@ -58,6 +58,7 @@ exports.getFullQuizInfo = async (req, res) => {
       child_id,
       is_child,
       userId,
+      quiz_id,
     });
 
     let userAns = {};
@@ -65,9 +66,12 @@ exports.getFullQuizInfo = async (req, res) => {
       userAns = getUserAnswers[0].answers;
     }
 
+    console.log(userAns);
+
     // Populate each question with its answers
     const questionsWithAnswers = await Promise.all(
       questions.map(async (question, index) => {
+        console.log(question._id);
         let flag = false;
         if (Object.keys(userAns).length > 0) flag = true;
 
