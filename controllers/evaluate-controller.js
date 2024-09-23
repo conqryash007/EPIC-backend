@@ -232,7 +232,7 @@ exports.evaluate = async (req, res) => {
           certificate_url: s3Response,
           correctAns,
           totalQuestion,
-          percentage,
+          percentage: Math.round(percentage),
         });
       } else {
         await afterFailingQuiz(child_id, is_child, userId, quiz_id);
@@ -242,7 +242,7 @@ exports.evaluate = async (req, res) => {
           passed: false,
           correctAns,
           totalQuestion,
-          percentage,
+          percentage: Math.round(percentage),
         });
       }
     } else {

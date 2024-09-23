@@ -85,8 +85,11 @@ exports.getFullQuizInfo = async (req, res) => {
       })
     );
 
+    const quizData = await Quiz.findById(quiz_id);
+
     res.status(200).json({
       quiz_id,
+      quiz_name: quizData?.title || "",
       data: questionsWithAnswers,
     });
   } catch (err) {
@@ -326,3 +329,45 @@ exports.addAnswer = async (req, res) => {
     res.status(400).json({ ok: false, msg: error.message });
   }
 };
+
+// const xlsx = require("xlsx");
+// exports.custom = async (req, res) => {
+//   try {
+//     const quiz = await Quiz.findById("66ebee101114c938aa039c1c");
+//     const workbook = xlsx.readFile("2.xlsx");
+//     const sheet_name_list = workbook.SheetNames;
+//     const worksheet = workbook.Sheets[sheet_name_list[0]];
+
+//     // Convert sheet to JSON
+//     const data = xlsx.utils.sheet_to_json(worksheet);
+
+//     let iiii = 1;
+//     for (let row of data) {
+//       const question_text = row["Question"];
+//       const correctOption = row["Correct Answer"];
+//       const question = new Question({
+//         question_text,
+//         quiz_id: "66ebee101114c938aa039c1c",
+//       });
+
+//       const questRes = await question.save();
+
+//       for (let i = 1; i <= 4; i++) {
+//         let optionText = row[`Option ${i}`];
+//         let isTrue = `Option ${i}` === correctOption; // Compare with correct option
+
+//         const answer = new Answer({
+//           answer_text: optionText,
+//           is_correct: isTrue,
+//           question_id: questRes._id,
+//         });
+
+//         await answer.save(); // Save each answer
+//       }
+
+//       console.log(`saved : ${iiii++}`);
+//     }
+//   } catch (err) {
+//     console.log(err.message);
+//   }
+// };

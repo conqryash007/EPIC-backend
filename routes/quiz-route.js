@@ -7,6 +7,8 @@ const evaluateController = require("./../controllers/evaluate-controller");
 const authenticateToken = require("./../middleware/authenticateToken");
 const jwtAuth = require("./../middleware/jwtAuth");
 
+// router.get("/xx/custom", quizController.custom);
+
 router.get("/topic", jwtAuth, topicController.getTopics);
 router.get("/topic/:id", jwtAuth, topicController.getTopicById);
 
